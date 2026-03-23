@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [v0.4.1](https://github.com/armadillo-ui/math-utils/compare/ed19bc086ef2098ef381a55560bc52515b381576..v0.4.1) - 2026-03-23
+#### Bug fixes
+- sync version state - ([ed19bc0](https://github.com/armadillo-ui/math-utils/commit/ed19bc086ef2098ef381a55560bc52515b381576)) - Eduardo Diaz Ugarte
+
+- - -
+
 ## [v0.4.0](https://github.com/armadillo-ui/math-utils/compare/cfa5424630657cc80804436af3a26be3c05bc918..v0.4.0) - 2026-03-23
 #### Bug fixes
 - update pre_bump_hooks configuration in cog.toml - ([5f53c11](https://github.com/armadillo-ui/math-utils/commit/5f53c1165cb3a62cef2085e6be39d2c61d58fc0a)) - Eduardo Diaz Ugarte
