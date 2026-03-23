@@ -25,7 +25,7 @@ jobs:
           registry-url: https://npm.pkg.github.com
 
       - name: Show .npmrc
-        run: cat .npmrc 2>/dev/null || cat ~/.npmrc 2>/dev/null || echo "no .npmrc found"
+        run: cat "${NPM_CONFIG_USERCONFIG}"
 
       - run: npm ci
 
