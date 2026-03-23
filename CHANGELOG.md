@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file. See [conven
 - - -
 ## [v0.4.0](https://github.com/armadillo-ui/math-utils/compare/cfa5424630657cc80804436af3a26be3c05bc918..v0.4.0) - 2026-03-23
 #### Bug fixes
+- update pre_bump_hooks configuration in cog.toml - ([5f53c11](https://github.com/armadillo-ui/math-utils/commit/5f53c1165cb3a62cef2085e6be39d2c61d58fc0a)) - Eduardo Diaz Ugarte
+- update configuration for bump hooks and commit types - ([c06fb5a](https://github.com/armadillo-ui/math-utils/commit/c06fb5a646df3a5105a5fca40b31ad381b46e6c1)) - Eduardo Diaz Ugarte
+- update comments and formatting in release workflow and configuration - ([949a61c](https://github.com/armadillo-ui/math-utils/commit/949a61c9d11eda577409a2b2d3217e2acc81efdc)) - Eduardo Diaz Ugarte
+- correct formatting and comments in release workflow - ([092c507](https://github.com/armadillo-ui/math-utils/commit/092c507614d73adb680728d9c4ca9787357090eb)) - Eduardo Diaz Ugarte
+#### Features
+- update CI and release workflows to use latest action versions and add environment variable for Node.js - ([cfa5424](https://github.com/armadillo-ui/math-utils/commit/cfa5424630657cc80804436af3a26be3c05bc918)) - Eduardo Diaz Ugarte
+
+- - -
+
+## [v0.4.0](https://github.com/armadillo-ui/math-utils/compare/cfa5424630657cc80804436af3a26be3c05bc918..v0.4.0) - 2026-03-23
+#### Bug fixes
 - correct formatting and comments in release workflow - ([092c507](https://github.com/armadillo-ui/math-utils/commit/092c507614d73adb680728d9c4ca9787357090eb)) - Eduardo Diaz Ugarte
 #### Chores
 - **(version)** v0.4.0 - ([3dedcd9](https://github.com/armadillo-ui/math-utils/commit/3dedcd97f6d4fbe2ca7b4f00ef3f7a5ecff5e294)) - github-actions[bot]
