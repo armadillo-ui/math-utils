@@ -18,25 +18,23 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      # ── 1. Setup + deps ─────────────────────────────────────────────
       - uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: npm
           registry-url: https://npm.pkg.github.com
 
+      - name: Show .npmrc
+        run: cat .npmrc 2>/dev/null || cat ~/.npmrc 2>/dev/null || echo "no .npmrc found"
+
       - run: npm ci
 
-      # ── 2. Validaciones ─────────────────────────────────────────────
       - name: Typecheck
         run: npm run typecheck
 
       - name: Test
         run: npm test
 
-      # ── 3. Cocogitto — bump + package.json + changelog ───────────────
-      #       pre_bump_hook en cog.toml actualiza package.json
-      #       antes de crear el commit de release
       - name: Bump version and generate changelog
         uses: cocogitto/cocogitto-action@v3
         id: release
@@ -46,12 +44,10 @@ jobs:
           git-user: "github-actions[bot]"
           git-user-email: "github-actions[bot]@users.noreply.github.com"
 
-      # ── 4. Push commit y tag ─────────────────────────────────────────
       - name: Push release commit and tag
         if: steps.release.outputs.version != ''
         run: git push origin main --follow-tags
 
-      # ── 5. Build y publish ───────────────────────────────────────────
       - name: Build
         if: steps.release.outputs.version != ''
         run: npm run build
@@ -62,7 +58,6 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # ── 6. GitHub Release ────────────────────────────────────────────
       - name: Generate changelog for release
         if: steps.release.outputs.version != ''
         run: cog changelog --at ${{ steps.release.outputs.version }} > GITHUB_CHANGELOG.md
