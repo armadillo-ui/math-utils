@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [v0.6.0](https://github.com/armadillo-ui/math-utils/compare/1461fe890b7bcd255590ab06c42321848008520a..v0.6.0) - 2026-03-23
+#### Features
+- enhance release summary with detailed version and package information - ([1461fe8](https://github.com/armadillo-ui/math-utils/commit/1461fe890b7bcd255590ab06c42321848008520a)) - Eduardo Diaz Ugarte
+
+- - -
+
 ## [v0.5.0](https://github.com/armadillo-ui/math-utils/compare/09c868174733b6aa9b51cf6273955cf35aa110a0..v0.5.0) - 2026-03-23
 #### Features
 - enhance release summary in workflow with detailed version and package information - ([09c8681](https://github.com/armadillo-ui/math-utils/commit/09c868174733b6aa9b51cf6273955cf35aa110a0)) - Eduardo Diaz Ugarte
