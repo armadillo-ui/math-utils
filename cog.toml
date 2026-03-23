@@ -1,0 +1,22 @@
+# cog.toml — cocogitto config
+tag_prefix = "v"
+branch_whitelist = ["main"]
+ignore_merge_commits = true
+generate_mono_repository_global_tag = false
+
+[changelog]
+path = "CHANGELOG.md"
+template = "remote"
+remote = "github.com"
+repository = "math-utils"
+owner = "tu-org"
+authors = []
+
+[git_hooks]
+
+[commit_types]
+feat     = { changelog_title = "Features" }
+fix      = { changelog_title = "Bug fixes" }
+perf     = { changelog_title = "Performance" }
+refactor = { changelog_title = "Refactor" }
+docs     = { changelog_title = "Documentation" }

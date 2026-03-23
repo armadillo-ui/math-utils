@@ -1,0 +1,67 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # para crear tags y commits
+      packages: write   # para publicar en GitHub Packages
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0              # cocogitto necesita todo el historial
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # ── 1. Tests ────────────────────────────────────────────────────
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+          # Cambia a https://npm.pkg.github.com para GitHub Packages
+
+      - run: npm ci
+
+      - name: Run tests
+        run: node --experimental-strip-types --test src/index.test.ts
+
+      # ── 2. Cocogitto — bump version + changelog (Rust, sin Node) ────
+      - name: Bump version and generate changelog
+        uses: cocogitto/cocogitto-action@v3
+        id: release
+        with:
+          release: true
+          git-user: "github-actions[bot]"
+          git-user-email: "github-actions[bot]@users.noreply.github.com"
+
+      # ── 3. Build y publish solo si hubo bump ────────────────────────
+      - name: Build
+        if: steps.release.outputs.bumped == 'true'
+        run: npx tsdown          # tsdown ejecutado con npx, sin estar en devDeps del CI
+
+      - name: Sync version from git tag → package.json
+        if: steps.release.outputs.bumped == 'true'
+        run: |
+          NEW_VERSION="${{ steps.release.outputs.version }}"
+          # Quitar el prefijo "v" si lo trae
+          VERSION="${NEW_VERSION#v}"
+          npm version "$VERSION" --no-git-tag-version --allow-same-version
+
+      - name: Publish to npm
+        if: steps.release.outputs.bumped == 'true'
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # ── 4. GitHub Release con el changelog generado ─────────────────
+      - name: Create GitHub Release
+        if: steps.release.outputs.bumped == 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.release.outputs.version }}
+          body_path: CHANGELOG.md
