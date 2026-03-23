@@ -34,7 +34,9 @@ jobs:
       - name: Test
         run: npm test
 
-      # ── 3. Cocogitto — bump + changelog ─────────────────────────────
+      # ── 3. Cocogitto — bump + package.json + changelog ───────────────
+      #       pre_bump_hook en cog.toml actualiza package.json
+      #       antes de crear el commit de release
       - name: Bump version and generate changelog
         uses: cocogitto/cocogitto-action@v3
         id: release
@@ -53,12 +55,6 @@ jobs:
       - name: Build
         if: steps.release.outputs.version != ''
         run: npm run build
-
-      - name: Sync version from git tag → package.json
-        if: steps.release.outputs.version != ''
-        run: |
-          VERSION="${{ steps.release.outputs.version }}"
-          npm version "${VERSION#v}" --no-git-tag-version --allow-same-version
 
       - name: Publish to GitHub Packages
         if: steps.release.outputs.version != ''

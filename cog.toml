@@ -11,6 +11,14 @@ repository = "math-utils"
 owner = "armadillo-ui"
 authors = []
 
+[bump_hooks]
+pre_bump_hooks = [
+  "npm version {{version}} --no-git-tag-version --allow-same-version"
+]
+
+[git_options]
+bump_commit_message = "chore(version): {{version}} [skip ci]"
+
 [commit_types]
 feat     = { changelog_title = "Features" }
 fix      = { changelog_title = "Bug fixes" }
