@@ -2,6 +2,7 @@
 tag_prefix = "v"
 branch_whitelist = ["main"]
 ignore_merge_commits = true
+skip_ci = "[skip ci]"
 
 [changelog]
 path = "CHANGELOG.md"
@@ -11,13 +12,9 @@ repository = "math-utils"
 owner = "armadillo-ui"
 authors = []
 
-[bump_hooks]
 pre_bump_hooks = [
   "npm version {{version}} --no-git-tag-version --allow-same-version"
 ]
-
-[git_options]
-bump_commit_message = "chore(version): {{version}} [skip ci]"
 
 [commit_types]
 feat     = { changelog_title = "Features" }
@@ -25,4 +22,4 @@ fix      = { changelog_title = "Bug fixes" }
 perf     = { changelog_title = "Performance" }
 refactor = { changelog_title = "Refactor" }
 docs     = { changelog_title = "Documentation" }
-chore    = { changelog_title = "Chores", omit = true }
+chore    = { changelog_title = "Chores", omit_from_changelog = true }
