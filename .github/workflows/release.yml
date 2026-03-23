@@ -24,9 +24,6 @@ jobs:
           cache: npm
           registry-url: https://npm.pkg.github.com
 
-      - name: Show .npmrc
-        run: cat "${NPM_CONFIG_USERCONFIG}"
-
       - run: npm ci
 
       - name: Typecheck
@@ -34,6 +31,9 @@ jobs:
 
       - name: Test
         run: npm test
+
+      - name: Build
+        run: npm run build
 
       - name: Bump version and generate changelog
         uses: cocogitto/cocogitto-action@v3
@@ -48,13 +48,9 @@ jobs:
         if: steps.release.outputs.version != ''
         run: git push origin main --follow-tags
 
-      - name: Build
-        if: steps.release.outputs.version != ''
-        run: npm run build
-
       - name: Publish to GitHub Packages
         if: steps.release.outputs.version != ''
-        run: npm publish --access public
+        run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
