@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [v0.4.0](https://github.com/armadillo-ui/math-utils/compare/cfa5424630657cc80804436af3a26be3c05bc918..v0.4.0) - 2026-03-23
+#### Features
+- update CI and release workflows to use latest action versions and add environment variable for Node.js - ([cfa5424](https://github.com/armadillo-ui/math-utils/commit/cfa5424630657cc80804436af3a26be3c05bc918)) - Eduardo Diaz Ugarte
+
+- - -
+
 ## [v0.3.0](https://github.com/armadillo-ui/math-utils/compare/26a4b8e74ee4c9c80356497ead9b90e526bed101..v0.3.0) - 2026-03-23
 #### Features
 - add debug step to release workflow for enhanced troubleshooting - ([26a4b8e](https://github.com/armadillo-ui/math-utils/commit/26a4b8e74ee4c9c80356497ead9b90e526bed101)) - Eduardo Diaz Ugarte
