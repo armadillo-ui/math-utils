@@ -47,7 +47,29 @@ jobs:
           git-user: "github-actions[bot]"
           git-user-email: "github-actions[bot]@users.noreply.github.com"
 
-      # ── 4. Build y publish solo si cocogitto bumpeó ─────────────────
+      # ── 4. Debug ─────────────────────────────────────────────────────
+      - name: Debug
+        if: always()
+        run: |
+          echo "── cocogitto outputs ──"
+          echo "version : ${{ steps.release.outputs.version }}"
+          echo ""
+          echo "── git log (últimos 5 commits) ──"
+          git log --oneline -5
+          echo ""
+          echo "── git tags ──"
+          git tag --sort=-creatordate | head -5
+          echo ""
+          echo "── git status ──"
+          git status
+          echo ""
+          echo "── git remote -v ──"
+          git remote -v
+          echo ""
+          echo "── CHANGELOG.md existe? ──"
+          ls -la CHANGELOG.md 2>/dev/null || echo "NO existe"
+
+      # ── 5. Build y publish solo si cocogitto bumpeó ─────────────────
       - name: Build
         if: steps.release.outputs.version != ''
         run: npm run build
@@ -64,7 +86,7 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # ── 5. Generar changelog y crear GitHub Release ──────────────────
+      # ── 6. Generar changelog y crear GitHub Release ──────────────────
       - name: Generate changelog for release
         if: steps.release.outputs.version != ''
         run: cog changelog --at ${{ steps.release.outputs.version }} > GITHUB_CHANGELOG.md

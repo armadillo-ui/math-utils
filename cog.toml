@@ -17,3 +17,4 @@ fix      = { changelog_title = "Bug fixes" }
 perf     = { changelog_title = "Performance" }
 refactor = { changelog_title = "Refactor" }
 docs     = { changelog_title = "Documentation" }
+chore    = { changelog_title = "Chores", omit = true }
