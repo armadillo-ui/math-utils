@@ -1,18 +1,18 @@
 {
-  "name": "tsdown-starter",
-  "type": "module",
+  "name": "@armadillo-ui/math-utils",
   "version": "0.0.0",
-  "description": "A starter for creating a TypeScript package.",
-  "author": "Author Name <author.name@mail.com>",
-  "license": "MIT",
-  "homepage": "https://github.com/author/library#readme",
+  "description": "Simple math utilities: add, subtract, multiply, divide",
+  "homepage": "https://github.com/armadillo-ui/math-utils#readme",
+  "bugs": {
+    "url": "https://github.com/armadillo-ui/math-utils/issues"
+  },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/author/library.git"
+    "url": "git+https://github.com/armadillo-ui/math-utils.git"
   },
-  "bugs": {
-    "url": "https://github.com/author/library/issues"
-  },
+  "license": "MIT",
+  "author": "Armadillo UI",
+  "type": "module",
   "exports": {
     ".": "./dist/index.mjs",
     "./package.json": "./package.json"
@@ -23,14 +23,18 @@
   "scripts": {
     "build": "tsdown",
     "dev": "tsdown --watch",
-    "test": "vitest",
-    "typecheck": "tsc --noEmit",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@types/node": "24.12.0",
     "tsdown": "0.21.4",
     "typescript": "5.9.3",
     "vitest": "4.1.0"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
   }
 }

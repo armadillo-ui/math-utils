@@ -17,8 +17,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: npm
 
       - run: npm ci
 
-      # Node 22 soporta TypeScript nativo con --experimental-strip-types
-      - run: node --experimental-strip-types --test src/index.test.ts
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm test
