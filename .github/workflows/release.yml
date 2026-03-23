@@ -4,18 +4,21 @@ on:
   push:
     branches: [main]
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
     permissions:
-      contents: write   # para crear tags y commits
-      packages: write   # para publicar en GitHub Packages
+      contents: write
+      packages: write
 
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0              # cocogitto necesita todo el historial
+          fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
       # ── 1. Setup + deps ─────────────────────────────────────────────
@@ -34,42 +37,41 @@ jobs:
       - name: Test
         run: npm test
 
-      # ── 3. Cocogitto — bump version + changelog (Rust, sin Node) ────
+      # ── 3. Cocogitto — bump + changelog ─────────────────────────────
       - name: Bump version and generate changelog
         uses: cocogitto/cocogitto-action@v3
         id: release
         with:
           release: true
+          check: false
           git-user: "github-actions[bot]"
           git-user-email: "github-actions[bot]@users.noreply.github.com"
 
-      # ── 4. Debug output (borrar después de confirmar que funciona) ───
-      - name: Check bump output
-        run: |
-          echo "bumped=${{ steps.release.outputs.bumped }}"
-          echo "version=${{ steps.release.outputs.version }}"
-
-      # ── 5. Build y publish solo si hubo bump ────────────────────────
+      # ── 4. Build y publish solo si cocogitto bumpeó ─────────────────
       - name: Build
-        if: steps.release.outputs.bumped == 'true'
+        if: steps.release.outputs.version != ''
         run: npm run build
 
       - name: Sync version from git tag → package.json
-        if: steps.release.outputs.bumped == 'true'
+        if: steps.release.outputs.version != ''
         run: |
           VERSION="${{ steps.release.outputs.version }}"
           npm version "${VERSION#v}" --no-git-tag-version --allow-same-version
 
       - name: Publish to GitHub Packages
-        if: steps.release.outputs.bumped == 'true'
+        if: steps.release.outputs.version != ''
         run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # ── 6. GitHub Release con el changelog generado ─────────────────
+      # ── 5. Generar changelog y crear GitHub Release ──────────────────
+      - name: Generate changelog for release
+        if: steps.release.outputs.version != ''
+        run: cog changelog --at ${{ steps.release.outputs.version }} > GITHUB_CHANGELOG.md
+
       - name: Create GitHub Release
-        if: steps.release.outputs.bumped == 'true'
+        if: steps.release.outputs.version != ''
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ steps.release.outputs.version }}
-          body_path: CHANGELOG.md
+          tag_name: ${{ steps.release.outputs.version }}
+          body_path: GITHUB_CHANGELOG.md
