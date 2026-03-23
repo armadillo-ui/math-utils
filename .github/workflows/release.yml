@@ -21,10 +21,9 @@ jobs:
       # ── 1. Setup + deps ─────────────────────────────────────────────
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           cache: npm
-          registry-url: https://registry.npmjs.org
-          # Cambia a https://npm.pkg.github.com para GitHub Packages
+          registry-url: https://npm.pkg.github.com
 
       - run: npm ci
 
@@ -44,7 +43,13 @@ jobs:
           git-user: "github-actions[bot]"
           git-user-email: "github-actions[bot]@users.noreply.github.com"
 
-      # ── 4. Build y publish solo si hubo bump ────────────────────────
+      # ── 4. Debug output (borrar después de confirmar que funciona) ───
+      - name: Check bump output
+        run: |
+          echo "bumped=${{ steps.release.outputs.bumped }}"
+          echo "version=${{ steps.release.outputs.version }}"
+
+      # ── 5. Build y publish solo si hubo bump ────────────────────────
       - name: Build
         if: steps.release.outputs.bumped == 'true'
         run: npm run build
@@ -55,13 +60,13 @@ jobs:
           VERSION="${{ steps.release.outputs.version }}"
           npm version "${VERSION#v}" --no-git-tag-version --allow-same-version
 
-      - name: Publish to npm
+      - name: Publish to GitHub Packages
         if: steps.release.outputs.bumped == 'true'
         run: npm publish --access public
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # ── 5. GitHub Release con el changelog generado ─────────────────
+      # ── 6. GitHub Release con el changelog generado ─────────────────
       - name: Create GitHub Release
         if: steps.release.outputs.bumped == 'true'
         uses: softprops/action-gh-release@v2
