@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [v0.4.4](https://github.com/armadillo-ui/math-utils/compare/0d4947d92650888e776ac9ff2382d285e3f3bc28..v0.4.4) - 2026-03-23
+#### Bug fixes
+- improve .npmrc display in release workflow for better debugging - ([0d4947d](https://github.com/armadillo-ui/math-utils/commit/0d4947d92650888e776ac9ff2382d285e3f3bc28)) - Eduardo Diaz Ugarte
+
+- - -
+
 ## [v0.4.3](https://github.com/armadillo-ui/math-utils/compare/24d536319a57df0fd7023bb6ba3881a5fc1ef776..v0.4.3) - 2026-03-23
 #### Bug fixes
 - update comments and formatting in release workflow for clarity - ([24d5363](https://github.com/armadillo-ui/math-utils/commit/24d536319a57df0fd7023bb6ba3881a5fc1ef776)) - Eduardo Diaz Ugarte
