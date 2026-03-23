@@ -79,14 +79,14 @@ jobs:
         if: steps.release.outputs.version != ''
         run: |
           VERSION="${{ steps.release.outputs.version }}"
-          echo "## Released \`@armadillo-ui/math-utils@${VERSION#v}\` 🚀" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| | |" >> $GITHUB_STEP_SUMMARY
-          echo "|---|---|" >> $GITHUB_STEP_SUMMARY
-          echo "| Version | \`${VERSION}\` |" >> $GITHUB_STEP_SUMMARY
-          echo "| Package | \`@armadillo-ui/math-utils\` |" >> $GITHUB_STEP_SUMMARY
-          echo "| Registry | [npm.pkg.github.com](https://github.com/armadillo-ui/math-utils/pkgs/npm/math-utils) |" >> $GITHUB_STEP_SUMMARY
-          echo "| Release | [${VERSION}](https://github.com/armadillo-ui/math-utils/releases/tag/${VERSION}) |" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Changelog" >> $GITHUB_STEP_SUMMARY
-          cat GITHUB_CHANGELOG.md >> $GITHUB_STEP_SUMMARY
+          cat >> $GITHUB_STEP_SUMMARY << MD
+          ## \`@armadillo-ui/math-utils@${VERSION#v}\` published
+
+          | | |
+          |---|---|
+          | Version | [\`${VERSION}\`](https://github.com/armadillo-ui/math-utils/releases/tag/${VERSION}) |
+          | Package | [GitHub Packages](https://github.com/armadillo-ui/math-utils/pkgs/npm/math-utils) |
+
+          ### What's changed
+          $(cat GITHUB_CHANGELOG.md)
+          MD
