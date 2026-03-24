@@ -127,7 +127,7 @@ declare -A sections=(
 for type in feat fix perf refactor docs; do
   type_lines=$(echo "$COMMITS" | grep -E "^[^|]*\|\|[^|]*\|\|${type}(\(.+\))?:" || true)
   if [[ -n "$type_lines" ]]; then
-    CHANGELOG_ENTRY+=$'\n'"#### ${sections[$type]}"$'\n'
+    CHANGELOG_ENTRY+=$'\n'"### ${sections[$type]}"$'\n'
     while IFS= read -r line; do
       [[ -z "$line" ]] && continue
       full_hash=$(echo "$line" | cut -d'|' -f1)
