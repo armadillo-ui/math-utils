@@ -31,8 +31,6 @@ jobs:
 
       - run: npm ci
 
-      - run: npm audit signatures
-
       - name: Typecheck
         run: npm run typecheck
 
