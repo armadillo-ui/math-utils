@@ -108,55 +108,15 @@ ok "package.json updated"
 
 # ─── 7. generate changelog ──────────────────────────────────────────────────
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/changelog.sh"
+
 log "Generating changelog"
 
-if [[ "$HAS_PREVIOUS_TAG" == true ]]; then
-  CHANGELOG_ENTRY="## [$TAG]($REPO_URL/compare/$LAST_TAG..$TAG) - $(date +%Y-%m-%d)"
-else
-  CHANGELOG_ENTRY="## $TAG - $(date +%Y-%m-%d)"
-fi
-CHANGELOG_ENTRY+=$'\n'
-
-declare -A sections=(
-  [feat]="Features"
-  [fix]="Bug fixes"
-  [perf]="Performance"
-  [refactor]="Refactor"
-  [docs]="Documentation"
-)
-
-for type in feat fix perf refactor docs; do
-  TAB=$'\t'
-  type_lines=$(echo "$COMMITS" | grep -E "^[^${TAB}]*${TAB}[^${TAB}]*${TAB}${type}(\(.+\))?:" || true)
-  if [[ -n "$type_lines" ]]; then
-    CHANGELOG_ENTRY+=$'\n'"### ${sections[$type]}"$'\n'
-    while IFS=$'\t' read -r full_hash short_hash raw_msg author; do
-      [[ -z "$raw_msg" ]] && continue
-      # Strip conventional commit prefix (e.g. "fix: ", "feat(scope): ")
-      clean_msg=$(echo "$raw_msg" | sed -E 's/^[a-z]+(\([^)]+\))?!?:[[:space:]]*//')
-      CHANGELOG_ENTRY+="- $clean_msg - ([$short_hash]($REPO_URL/commit/$full_hash)) - $author"$'\n'
-    done <<< "$type_lines"
-  fi
-done
-
+CHANGELOG_ENTRY=$(generate_changelog_entry "$TAG" "$LAST_TAG" "$REPO_URL" "$HAS_PREVIOUS_TAG" "$COMMITS")
 GITHUB_CHANGELOG="$CHANGELOG_ENTRY"
 
-if [[ -f CHANGELOG.md ]]; then
-  # Insert after the first "- - -" separator (below the header)
-  SEPARATOR_LINE=$(grep -n '^- - -$' CHANGELOG.md | head -1 | cut -d: -f1)
-  if [[ -n "$SEPARATOR_LINE" ]]; then
-    head -n "$SEPARATOR_LINE" CHANGELOG.md > CHANGELOG.md.tmp
-    printf '\n%s\n- - -\n' "$CHANGELOG_ENTRY" >> CHANGELOG.md.tmp
-    tail -n +$((SEPARATOR_LINE + 1)) CHANGELOG.md >> CHANGELOG.md.tmp
-    mv CHANGELOG.md.tmp CHANGELOG.md
-  else
-    # No separator found — prepend after first line
-    EXISTING=$(cat CHANGELOG.md)
-    printf '%s\n\n%s\n' "$CHANGELOG_ENTRY" "$EXISTING" > CHANGELOG.md
-  fi
-else
-  echo "$CHANGELOG_ENTRY" > CHANGELOG.md
-fi
+insert_changelog_entry "$CHANGELOG_ENTRY" CHANGELOG.md
 
 ok "CHANGELOG.md updated"
 
