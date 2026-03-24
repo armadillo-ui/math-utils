@@ -47,7 +47,7 @@ generate_changelog_entry() {
       [[ -z "$raw_msg" ]] && continue
       # Strip conventional commit prefix: "type(scope)!: " → ""
       clean_msg="${raw_msg#*: }"
-      entry+="- $clean_msg - ([$short_hash]($repo_url/commit/$full_hash)) - $author"$'\n'
+      entry+="- $clean_msg - ([$short_hash]($repo_url/commit/$full_hash))"$'\n'
     done <<< "$type_lines"
   done
 
