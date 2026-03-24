@@ -47,23 +47,24 @@ log "Repo URL: $REPO_URL"
 LAST_TAG=$(git describe --tags --match "v[0-9]*" --abbrev=0 2>/dev/null || echo "")
 HAS_PREVIOUS_TAG=true
 
+SEP=$'\t'
+
 if [[ -z "$LAST_TAG" ]]; then
   log "No previous tag found, starting from v0.0.0"
   LAST_TAG="v0.0.0"
   HAS_PREVIOUS_TAG=false
-  COMMITS=$(git log --pretty=format:"%H||%h||%s||%aN" 2>/dev/null)
+  COMMITS=$(git log --pretty=format:"%H${SEP}%h${SEP}%s${SEP}%aN" 2>/dev/null)
 else
   log "Last tag: $LAST_TAG"
-  COMMITS=$(git log "${LAST_TAG}..HEAD" --pretty=format:"%H||%h||%s||%aN")
+  COMMITS=$(git log "${LAST_TAG}..HEAD" --pretty=format:"%H${SEP}%h${SEP}%s${SEP}%aN")
 fi
 
 # ─── 4. detect bump type ────────────────────────────────────────────────────
 
 BUMP=""
 
-while IFS= read -r commit; do
-  [[ -z "$commit" ]] && continue
-  msg=$(echo "$commit" | cut -d'|' -f5)
+while IFS=$'\t' read -r _hash _short msg _author; do
+  [[ -z "$msg" ]] && continue
 
   if echo "$msg" | grep -qiE "(BREAKING.CHANGE|^.+!:)"; then
     BUMP="major"
@@ -125,15 +126,12 @@ declare -A sections=(
 )
 
 for type in feat fix perf refactor docs; do
-  type_lines=$(echo "$COMMITS" | grep -E "^[^|]*\|\|[^|]*\|\|${type}(\(.+\))?:" || true)
+  TAB=$'\t'
+  type_lines=$(echo "$COMMITS" | grep -E "^[^${TAB}]*${TAB}[^${TAB}]*${TAB}${type}(\(.+\))?:" || true)
   if [[ -n "$type_lines" ]]; then
     CHANGELOG_ENTRY+=$'\n'"### ${sections[$type]}"$'\n'
-    while IFS= read -r line; do
-      [[ -z "$line" ]] && continue
-      full_hash=$(echo "$line" | cut -d'|' -f1)
-      short_hash=$(echo "$line" | cut -d'|' -f3)
-      raw_msg=$(echo "$line" | cut -d'|' -f5)
-      author=$(echo "$line" | cut -d'|' -f7)
+    while IFS=$'\t' read -r full_hash short_hash raw_msg author; do
+      [[ -z "$raw_msg" ]] && continue
       # Strip conventional commit prefix (e.g. "fix: ", "feat(scope): ")
       clean_msg=$(echo "$raw_msg" | sed -E 's/^[a-z]+(\([^)]+\))?!?:[[:space:]]*//')
       CHANGELOG_ENTRY+="- $clean_msg - ([$short_hash]($REPO_URL/commit/$full_hash)) - $author"$'\n'
