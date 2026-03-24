@@ -3,6 +3,11 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [v1.0.0](https://github.com/armadillo-ui/math-utils/compare/v0.7.0..v1.0.0) - 2026-03-24
+
+### Bug fixes
+- correct changelog entry generation and insertion logic - ([56b4e11](https://github.com/armadillo-ui/math-utils/commit/56b4e112d7eacf1615c92cb068d35219d961fcb0)) - Eduardo Diaz Ugarte
+- - -
 ## [v0.7.0](https://github.com/armadillo-ui/math-utils/compare/v0.6.3..v0.7.0) - 2026-03-24
 
 ### Features
