@@ -31,6 +31,8 @@ jobs:
 
       - run: npm ci
 
+      - run: npm audit signatures
+
       - name: Typecheck
         run: npm run typecheck
 
@@ -40,51 +42,29 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Bump version and generate changelog
-        uses: cocogitto/cocogitto-action@v3
+      - name: Release
         id: release
-        with:
-          release: true
-          check: false
-          git-user: "github-actions[bot]"
-          git-user-email: "github-actions[bot]@users.noreply.github.com"
-
-      - name: Push release commit and tag
-        if: steps.release.outputs.version != ''
-        run: git push origin main --follow-tags
+        run: bash scripts/release.sh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GIT_AUTHOR_NAME: "github-actions[bot]"
+          GIT_AUTHOR_EMAIL: "github-actions[bot]@users.noreply.github.com"
 
       - name: Publish to GitHub Packages
-        if: steps.release.outputs.version != ''
+        if: steps.release.outputs.released == 'true'
         run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Generate changelog for release
-        if: steps.release.outputs.version != ''
-        run: cog changelog --at ${{ steps.release.outputs.version }} > GITHUB_CHANGELOG.md
-
-      - name: Create GitHub Release
-        if: steps.release.outputs.version != ''
-        run: |
-          gh release create ${{ steps.release.outputs.version }} \
-            --title "${{ steps.release.outputs.version }}" \
-            --notes-file GITHUB_CHANGELOG.md \
-            --target main
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Release summary
-        if: steps.release.outputs.version != ''
+        if: steps.release.outputs.released == 'true'
         run: |
           VERSION="${{ steps.release.outputs.version }}"
           cat >> $GITHUB_STEP_SUMMARY << MD
-          ## \`@armadillo-ui/math-utils@${VERSION#v}\` published
+          ## \`@armadillo-ui/math-utils@${VERSION#v}\` published 🚀
 
           | | |
           |---|---|
           | Version | [\`${VERSION}\`](https://github.com/armadillo-ui/math-utils/releases/tag/${VERSION}) |
           | Package | [GitHub Packages](https://github.com/armadillo-ui/math-utils/pkgs/npm/math-utils) |
-
-          ### What's changed
-          $(cat GITHUB_CHANGELOG.md)
           MD
