@@ -1,4 +1,4 @@
-# @armadillo-ui/math-utils
+# @armadillo-ui/math-utils - v1
 
 Utilidades matemáticas simples: suma, resta, multiplicación y división.
 
