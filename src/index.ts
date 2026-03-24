@@ -1,15 +1,7 @@
-/**
- * Suma dos números.
- * @example add(2, 3) // 5
- */
 export const add = (a: number, b: number): number => {
   return a + b;
 };
 
-/**
- * Resta dos números.
- * @example subtract(5, 3) // 2
- */
 export const subtract = (a: number, b: number): number => {
   return a - b;
 };
