@@ -109,14 +109,23 @@ ok "package.json updated"
 # ─── 7. generate changelog ──────────────────────────────────────────────────
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+log "Sourcing changelog.sh from $SCRIPT_DIR"
 source "$SCRIPT_DIR/changelog.sh"
 
 log "Generating changelog"
+log "  TAG=$TAG LAST_TAG=$LAST_TAG HAS_PREVIOUS_TAG=$HAS_PREVIOUS_TAG"
+log "  REPO_URL=$REPO_URL"
+log "  COMMITS (first 200 chars): ${COMMITS:0:200}"
 
+log "  Calling generate_changelog_entry..."
 CHANGELOG_ENTRY=$(generate_changelog_entry "$TAG" "$LAST_TAG" "$REPO_URL" "$HAS_PREVIOUS_TAG" "$COMMITS")
+log "  Entry generated (${#CHANGELOG_ENTRY} chars)"
+
 GITHUB_CHANGELOG="$CHANGELOG_ENTRY"
 
+log "  Calling insert_changelog_entry..."
 insert_changelog_entry "$CHANGELOG_ENTRY" CHANGELOG.md
+log "  Insert done"
 
 ok "CHANGELOG.md updated"
 
