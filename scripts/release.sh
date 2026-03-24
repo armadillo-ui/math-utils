@@ -47,16 +47,14 @@ log "Repo URL: $REPO_URL"
 LAST_TAG=$(git describe --tags --match "v[0-9]*" --abbrev=0 2>/dev/null || echo "")
 HAS_PREVIOUS_TAG=true
 
-SEP=$'\t'
-
 if [[ -z "$LAST_TAG" ]]; then
   log "No previous tag found, starting from v0.0.0"
   LAST_TAG="v0.0.0"
   HAS_PREVIOUS_TAG=false
-  COMMITS=$(git log --pretty=format:"%H${SEP}%h${SEP}%s${SEP}%aN" 2>/dev/null)
+  COMMITS=$(git log --pretty=format:"%H%x09%h%x09%s%x09%aN" 2>/dev/null)
 else
   log "Last tag: $LAST_TAG"
-  COMMITS=$(git log "${LAST_TAG}..HEAD" --pretty=format:"%H${SEP}%h${SEP}%s${SEP}%aN")
+  COMMITS=$(git log "${LAST_TAG}..HEAD" --pretty=format:"%H%x09%h%x09%s%x09%aN")
 fi
 
 # ─── 4. detect bump type ────────────────────────────────────────────────────
@@ -109,23 +107,14 @@ ok "package.json updated"
 # ─── 7. generate changelog ──────────────────────────────────────────────────
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-log "Sourcing changelog.sh from $SCRIPT_DIR"
 source "$SCRIPT_DIR/changelog.sh"
 
 log "Generating changelog"
-log "  TAG=$TAG LAST_TAG=$LAST_TAG HAS_PREVIOUS_TAG=$HAS_PREVIOUS_TAG"
-log "  REPO_URL=$REPO_URL"
-log "  COMMITS (first 200 chars): ${COMMITS:0:200}"
 
-log "  Calling generate_changelog_entry..."
 CHANGELOG_ENTRY=$(generate_changelog_entry "$TAG" "$LAST_TAG" "$REPO_URL" "$HAS_PREVIOUS_TAG" "$COMMITS")
-log "  Entry generated (${#CHANGELOG_ENTRY} chars)"
-
 GITHUB_CHANGELOG="$CHANGELOG_ENTRY"
 
-log "  Calling insert_changelog_entry..."
 insert_changelog_entry "$CHANGELOG_ENTRY" CHANGELOG.md
-log "  Insert done"
 
 ok "CHANGELOG.md updated"
 

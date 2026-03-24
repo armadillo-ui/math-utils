@@ -17,7 +17,6 @@ generate_changelog_entry() {
 
   local entry=""
 
-  # Header with compare link (or plain if no previous tag)
   if [[ "$has_previous_tag" == true ]]; then
     entry="## [$tag]($repo_url/compare/$last_tag..$tag) - $(date +%Y-%m-%d)"
   else
@@ -25,7 +24,8 @@ generate_changelog_entry() {
   fi
   entry+=$'\n'
 
-  local type type_lines title
+  local type title type_lines
+  local full_hash short_hash raw_msg author clean_msg
 
   for type in feat fix perf refactor docs; do
     case "$type" in
@@ -36,21 +36,19 @@ generate_changelog_entry() {
       docs)     title="Documentation" ;;
     esac
 
-    type_lines=$(printf "%s\n" "$commits" | awk -F '\t' -v t="$type" '
-      $3 ~ ("^" t "(\\(.+\\))?!?:") { print }
-    ')
+    # Filter commits matching this type (e.g. "feat:", "feat(scope)!:")
+    type_lines=$(printf '%s\n' "$commits" | awk -F '\t' -v t="^${type}(\\\\(.+\\\\))?!?:" '$3 ~ t')
 
-    if [[ -n "$type_lines" ]]; then
-      entry+=$'\n'"### $title"$'\n'
+    [[ -z "$type_lines" ]] && continue
 
-      while IFS=$'\t' read -r full_hash short_hash raw_msg author; do
-        [[ -z "$raw_msg" ]] && continue
+    entry+=$'\n'"### $title"$'\n'
 
-        clean_msg=$(echo "$raw_msg" | sed -E 's/^(feat|fix|perf|refactor|docs)(\([^)]+\))?!?:[[:space:]]*//')
-
-        entry+="- $clean_msg - ([$short_hash]($repo_url/commit/$full_hash)) - $author"$'\n'
-      done <<< "$type_lines"
-    fi
+    while IFS=$'\t' read -r full_hash short_hash raw_msg author; do
+      [[ -z "$raw_msg" ]] && continue
+      # Strip conventional commit prefix: "type(scope)!: " → ""
+      clean_msg="${raw_msg#*: }"
+      entry+="- $clean_msg - ([$short_hash]($repo_url/commit/$full_hash)) - $author"$'\n'
+    done <<< "$type_lines"
   done
 
   printf '%s' "$entry"
@@ -60,22 +58,22 @@ insert_changelog_entry() {
   local entry="$1"
   local file="${2:-CHANGELOG.md}"
 
-  if [[ -f "$file" ]]; then
-    # Insert after the first "- - -" separator (below the header)
-    local separator_line
-    separator_line=$(grep -n '^- - -$' "$file" | head -1 | cut -d: -f1)
-    if [[ -n "$separator_line" ]]; then
-      head -n "$separator_line" "$file" > "${file}.tmp"
-      printf '%s\n- - -\n' "$entry" >> "${file}.tmp"
-      tail -n +$((separator_line + 1)) "$file" >> "${file}.tmp"
-      mv "${file}.tmp" "$file"
-    else
-      # No separator found — prepend
-      local existing
-      existing=$(cat "$file")
-      printf '%s\n\n%s\n' "$entry" "$existing" > "$file"
-    fi
-  else
+  if [[ ! -f "$file" ]]; then
     echo "$entry" > "$file"
+    return
+  fi
+
+  local separator_line
+  separator_line=$(grep -n '^- - -$' "$file" | head -1 | cut -d: -f1 || true)
+
+  if [[ -n "$separator_line" ]]; then
+    head -n "$separator_line" "$file" > "${file}.tmp"
+    printf '%s\n- - -\n' "$entry" >> "${file}.tmp"
+    tail -n +$((separator_line + 1)) "$file" >> "${file}.tmp"
+    mv "${file}.tmp" "$file"
+  else
+    local existing
+    existing=$(cat "$file")
+    printf '%s\n\n%s\n' "$entry" "$existing" > "$file"
   fi
 }
