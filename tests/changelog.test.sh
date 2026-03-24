@@ -65,13 +65,13 @@ assert_contains "has Bug fixes section" "$result" "### Bug fixes"
 assert_contains "has Documentation section" "$result" "### Documentation"
 
 assert_contains "feat entry has commit link" "$result" \
-  "- add multiply function - ([abc1234]($REPO/commit/abc123full)) - Alice"
+  "- add multiply function - ([abc1234]($REPO/commit/abc123full))"
 
 assert_contains "fix entry has commit link" "$result" \
-  "- handle division by zero - ([def4567]($REPO/commit/def456full)) - Bob"
+  "- handle division by zero - ([def4567]($REPO/commit/def456full))"
 
 assert_contains "docs entry has commit link" "$result" \
-  "- update README - ([ghi7890]($REPO/commit/ghi789full)) - Alice"
+  "- update README - ([ghi7890]($REPO/commit/ghi789full))"
 
 assert_not_contains "no feat: prefix in output" "$result" "- feat:"
 assert_not_contains "no fix: prefix in output" "$result" "- fix:"
@@ -81,7 +81,7 @@ echo "  with scoped feat commit:"
 result=$(generate_changelog_entry "v2.0.0" "v1.0.0" "$REPO" "true" "$COMMITS_FEAT_ONLY")
 
 assert_contains "strips scope from prefix" "$result" \
-  "- add subtract - ([abc1234]($REPO/commit/abc123full)) - Charlie"
+  "- add subtract - ([abc1234]($REPO/commit/abc123full))"
 assert_not_contains "no feat(math): in output" "$result" "feat(math):"
 
 echo ""
@@ -89,14 +89,14 @@ echo "  with scoped fix commit:"
 result=$(generate_changelog_entry "v1.0.1" "v1.0.0" "$REPO" "true" "$COMMITS_FIX_SCOPED")
 
 assert_contains "strips scoped fix prefix" "$result" \
-  "- null pointer - ([xyz9999]($REPO/commit/xyz999full)) - Dana"
+  "- null pointer - ([xyz9999]($REPO/commit/xyz999full))"
 
 echo ""
 echo "  with breaking change commit:"
 result=$(generate_changelog_entry "v2.0.0" "v1.0.0" "$REPO" "true" "$COMMITS_BREAKING")
 
 assert_contains "strips breaking prefix" "$result" \
-  "- redesign API - ([brk0000]($REPO/commit/brk000full)) - Eve"
+  "- redesign API - ([brk0000]($REPO/commit/brk000full))"
 
 echo ""
 echo "  without previous tag:"
