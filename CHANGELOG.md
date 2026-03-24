@@ -9,6 +9,13 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+
+## [v0.6.3](https://github.com/armadillo-ui/math-utils/compare/v0.6.2..v0.6.3) - 2026-03-24
+
+#### Bug fixes
+- update release script to handle missing last tag and improve commit logging - ([096dd86](https://github.com/armadillo-ui/math-utils/commit/096dd86b4e1648dd13b411d8e62dfa4266975ea9)) - Eduardo Diaz Ugarte
+
+- - -
 ## [v0.6.1](https://github.com/armadillo-ui/math-utils/compare/0ad382613d4dd3d54b92bdfc5cbb10585ba0a37f..v0.6.1) - 2026-03-23
 #### Bug fixes
 - update actions/checkout to v6 in release workflow - ([0ad3826](https://github.com/armadillo-ui/math-utils/commit/0ad382613d4dd3d54b92bdfc5cbb10585ba0a37f)) - Eduardo Diaz Ugarte
