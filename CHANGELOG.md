@@ -1,3 +1,10 @@
+## v0.6.2 — 2026-03-24
+
+### Bug fixes
+- fix: enhance release script to handle missing last tag and improve changelog generation
+- fix: update release workflow to use bash script for version bump and changelog generation
+
+
 # Changelog
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
