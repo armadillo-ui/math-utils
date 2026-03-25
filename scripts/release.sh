@@ -27,7 +27,7 @@ require() {
 
 # ─── 1. deps check ──────────────────────────────────────────────────────────
 
-require git jq gh npm
+require git gh npm
 
 # ─── 2. git identity (from env) ─────────────────────────────────────────────
 
