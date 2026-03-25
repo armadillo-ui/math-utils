@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
+## [v1.1.2](https://github.com/armadillo-ui/math-utils/compare/v1.1.1..v1.1.2) - 2026-03-25
+
+### Bug fixes
+- update actions/checkout version in CI and release workflows - ([95b32b2](https://github.com/armadillo-ui/math-utils/commit/95b32b2b7a5a2412eb4cd335dff1de53e8bacbb8))
+- correct formatting in release workflow for GitHub Packages publishing - ([900f746](https://github.com/armadillo-ui/math-utils/commit/900f74649f43038c611d5e3b3c80179486e74567))
+
 - - -
 ## [v1.1.1](https://github.com/armadillo-ui/math-utils/compare/v1.1.0..v1.1.1) - 2026-03-25
 
