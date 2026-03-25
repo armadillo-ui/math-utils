@@ -53,7 +53,7 @@ jobs:
 
       - name: Publish to GitHub Packages
         if: steps.release.outputs.released == 'true'
-        run: npm publish --provenance
+        run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
