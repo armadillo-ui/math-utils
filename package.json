@@ -1,6 +1,6 @@
 {
   "name": "@armadillo-ui/math-utils",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Simple math utilities: add, subtract, multiply, divide",
   "homepage": "https://github.com/armadillo-ui/math-utils#readme",
   "bugs": {
