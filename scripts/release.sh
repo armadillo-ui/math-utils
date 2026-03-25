@@ -3,7 +3,7 @@ set -euo pipefail
 
 # ─── helpers ────────────────────────────────────────────────────────────────
 
-log()  { echo "▸ $*"; }
+log()  { echo "ℹ $*"; }
 ok()   { echo "✔ $*"; }
 die()  { echo "✖ $*" >&2; exit 1; }
 
@@ -37,9 +37,6 @@ require git gh npm
 export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
 export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
 
-# ─── 2b. repo URL ────────────────────────────────────────────────────────────
-
-# FIX #4: normalizar tanto formato HTTPS como SSH a URL HTTPS limpia
 #   HTTPS: https://github.com/org/repo.git  → https://github.com/org/repo
 #   SSH:   git@github.com:org/repo.git      → https://github.com/org/repo
 #   git+:  git+https://github.com/org/repo  → https://github.com/org/repo
@@ -69,7 +66,6 @@ fi
 
 BUMP=""
 
-# FIX #3a: detectar breaking change por cabecera (feat!: / fix(scope)!:)
 # Regex correcta según Conventional Commits spec:
 #   ^[a-z]+(\([^)]+\))?!:  →  tipo en minúsculas + scope opcional + ! + :
 while IFS=$'\t' read -r _hash _short msg _author; do
@@ -84,13 +80,11 @@ while IFS=$'\t' read -r _hash _short msg _author; do
     [[ "$BUMP" != "major" ]] && BUMP="minor"
   fi
 
-  # FIX #3b: fix y perf consolidados en una sola expresión
   if echo "$msg" | grep -qE "^(fix|perf)(\([^)]+\))?:"; then
     [[ -z "$BUMP" ]] && BUMP="patch"
   fi
 done <<< "$COMMITS"
 
-# FIX #3c: detectar breaking change por footer del body del commit
 # (segundo mecanismo según spec: "BREAKING CHANGE:" en el body)
 # Se hace fuera del loop para no releer todos los commits dentro de él
 if [[ "$BUMP" != "major" ]]; then
@@ -126,7 +120,18 @@ log "Updating package.json → $VERSION"
 npm version "$VERSION" --no-git-tag-version --allow-same-version
 ok "package.json updated"
 
-# ─── 7. generate changelog ──────────────────────────────────────────────────
+# ─── 7. npm publish ─────────────────────────────────────────────────────────
+# Publish BEFORE any git operation so that if it fails, the remote is untouched
+# and there is nothing to rollback. The workflow already ran `npm run build`
+# before this script, so dist/ is ready.
+
+log "Publishing to npm registry"
+if ! npm publish; then
+  die "npm publish failed — no git changes were pushed, remote is clean"
+fi
+ok "Published to npm registry"
+
+# ─── 8. generate changelog ──────────────────────────────────────────────────
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/changelog.sh"
@@ -140,38 +145,43 @@ insert_changelog_entry "$CHANGELOG_ENTRY" CHANGELOG.md
 
 ok "CHANGELOG.md updated"
 
-# ─── 8. release commit ──────────────────────────────────────────────────────
+# ─── 9. release commit ──────────────────────────────────────────────────────
 
 log "Committing release"
 git add package.json package-lock.json CHANGELOG.md
 git commit -m "chore(release): $TAG [skip ci]"
 ok "Release commit created"
 
-# ─── 9. tag ─────────────────────────────────────────────────────────────────
+# ─── 10. tag ────────────────────────────────────────────────────────────────
 
 git tag "$TAG"
 ok "Tag created: $TAG"
 
-# ─── 10. push ───────────────────────────────────────────────────────────────
+# ─── 11. push ───────────────────────────────────────────────────────────────
 
 log "Pushing to origin"
 git push origin main --follow-tags
 ok "Pushed"
 
-# ─── 11. github release ─────────────────────────────────────────────────────
+# ─── 12. github release (warn-only) ─────────────────────────────────────────
+# If this fails, npm is already published and git is pushed.
+# Consumers are unaffected — the release can be created manually.
 
 log "Creating GitHub Release"
 
 NOTES_FILE=$(mktemp)
 echo "$GITHUB_CHANGELOG" > "$NOTES_FILE"
 
-gh release create "$TAG" \
+if ! gh release create "$TAG" \
   --title "$TAG" \
   --notes-file "$NOTES_FILE" \
-  --target main
-
-rm -f "$NOTES_FILE"
-ok "GitHub Release created: $TAG"
+  --target main; then
+  rm -f "$NOTES_FILE"
+  log "⚠ GitHub Release failed — npm is published, create it manually"
+else
+  rm -f "$NOTES_FILE"
+  ok "GitHub Release created: $TAG"
+fi
 
 set_output "released" "true"
 set_output "version" "$TAG"
