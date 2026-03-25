@@ -3,6 +3,11 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [v1.1.1](https://github.com/armadillo-ui/math-utils/compare/v1.1.0..v1.1.1) - 2026-03-25
+
+### Bug fixes
+- update release workflow and script to include jq dependency - ([c8983ee](https://github.com/armadillo-ui/math-utils/commit/c8983ee69af8f7fbb280db5f3c120904d27f68e2))
+- - -
 ## [v1.1.0](https://github.com/armadillo-ui/math-utils/compare/v1.0.0..v1.1.0) - 2026-03-24
 
 ### Features
