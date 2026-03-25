@@ -13,6 +13,11 @@ All notable changes to this project will be documented in this file. See [conven
 ### Bug fixes
 - refactor CI jobs to reuse test job and ensure validation before release - ([52a913a](https://github.com/armadillo-ui/math-utils/commit/52a913a3f7a1b39ffc1399c0687aa5ce1e699235))
 
+## [v1.2.0](https://github.com/armadillo-ui/math-utils/compare/v1.1.3..v1.2.0) - 2026-03-25
+
+### Features
+- add release summary step to GitHub Actions workflow - ([d298f0d](https://github.com/armadillo-ui/math-utils/commit/d298f0d4329bcd06121159457e4650c5dce48242))
+
 - - -
 ## [v1.1.1](https://github.com/armadillo-ui/math-utils/compare/v1.1.0..v1.1.1) - 2026-03-25
 
