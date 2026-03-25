@@ -39,7 +39,15 @@ export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
 
 # ─── 2b. repo URL ────────────────────────────────────────────────────────────
 
-REPO_URL=$(git remote get-url origin | sed -e 's/\.git$//' -e 's|^git+||')
+# FIX #4: normalizar tanto formato HTTPS como SSH a URL HTTPS limpia
+#   HTTPS: https://github.com/org/repo.git  → https://github.com/org/repo
+#   SSH:   git@github.com:org/repo.git      → https://github.com/org/repo
+#   git+:  git+https://github.com/org/repo  → https://github.com/org/repo
+raw_url=$(git remote get-url origin)
+REPO_URL=$(echo "$raw_url" \
+  | sed -e 's/\.git$//' \
+        -e 's|^git+||' \
+        -e 's|^git@\([^:]*\):\(.*\)|https://\1/\2|')
 log "Repo URL: $REPO_URL"
 
 # ─── 3. last tag ────────────────────────────────────────────────────────────
@@ -61,22 +69,36 @@ fi
 
 BUMP=""
 
+# FIX #3a: detectar breaking change por cabecera (feat!: / fix(scope)!:)
+# Regex correcta según Conventional Commits spec:
+#   ^[a-z]+(\([^)]+\))?!:  →  tipo en minúsculas + scope opcional + ! + :
 while IFS=$'\t' read -r _hash _short msg _author; do
   [[ -z "$msg" ]] && continue
 
-  if echo "$msg" | grep -qiE "(BREAKING.CHANGE|^.+!:)"; then
+  if echo "$msg" | grep -qE "^[a-z]+(\([^)]+\))?!:"; then
     BUMP="major"
     break
   fi
 
-  if echo "$msg" | grep -qE "^feat(\(.+\))?:"; then
+  if echo "$msg" | grep -qE "^feat(\([^)]+\))?:"; then
     [[ "$BUMP" != "major" ]] && BUMP="minor"
   fi
 
-  if echo "$msg" | grep -qE "^fix(\(.+\))?:|^perf(\(.+\))?:"; then
+  # FIX #3b: fix y perf consolidados en una sola expresión
+  if echo "$msg" | grep -qE "^(fix|perf)(\([^)]+\))?:"; then
     [[ -z "$BUMP" ]] && BUMP="patch"
   fi
 done <<< "$COMMITS"
+
+# FIX #3c: detectar breaking change por footer del body del commit
+# (segundo mecanismo según spec: "BREAKING CHANGE:" en el body)
+# Se hace fuera del loop para no releer todos los commits dentro de él
+if [[ "$BUMP" != "major" ]]; then
+  if git log "${LAST_TAG}..HEAD" --pretty=format:"%B" 2>/dev/null \
+     | grep -qiE "^BREAKING[- ]CHANGE:"; then
+    BUMP="major"
+  fi
+fi
 
 [[ -z "$BUMP" ]] && skip "No releasable commits since $LAST_TAG"
 

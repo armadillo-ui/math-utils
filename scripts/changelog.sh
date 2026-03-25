@@ -17,10 +17,13 @@ generate_changelog_entry() {
 
   local entry=""
 
+  local today
+  today=$(TZ=UTC date +%Y-%m-%d)
+
   if [[ "$has_previous_tag" == true ]]; then
-    entry="## [$tag]($repo_url/compare/$last_tag..$tag) - $(date +%Y-%m-%d)"
+    entry="## [$tag]($repo_url/compare/$last_tag..$tag) - $today"
   else
-    entry="## $tag - $(date +%Y-%m-%d)"
+    entry="## $tag - $today"
   fi
   entry+=$'\n'
 
@@ -59,7 +62,7 @@ insert_changelog_entry() {
   local file="${2:-CHANGELOG.md}"
 
   if [[ ! -f "$file" ]]; then
-    echo "$entry" > "$file"
+    printf '%s\n\n- - -\n' "$entry" > "$file"
     return
   fi
 
@@ -67,13 +70,14 @@ insert_changelog_entry() {
   separator_line=$(grep -n '^- - -$' "$file" | head -1 | cut -d: -f1 || true)
 
   if [[ -n "$separator_line" ]]; then
-    head -n "$separator_line" "$file" > "${file}.tmp"
-    printf '%s\n- - -\n' "$entry" >> "${file}.tmp"
+    # Separador existente: insertar la nueva entrada antes de él
+    head -n "$((separator_line - 1))" "$file" > "${file}.tmp"
+    printf '%s\n\n- - -\n' "$entry" >> "${file}.tmp"
     tail -n +$((separator_line + 1)) "$file" >> "${file}.tmp"
     mv "${file}.tmp" "$file"
   else
     local existing
     existing=$(cat "$file")
-    printf '%s\n\n%s\n' "$entry" "$existing" > "$file"
+    printf '%s\n\n- - -\n\n%s\n' "$entry" "$existing" > "$file"
   fi
 }
