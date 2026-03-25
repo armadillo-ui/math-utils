@@ -27,7 +27,7 @@ require() {
 
 # ─── 1. deps check ──────────────────────────────────────────────────────────
 
-require git gh npm
+require git gh npm jq
 
 # ─── 2. git identity (from env) ─────────────────────────────────────────────
 
@@ -185,3 +185,20 @@ fi
 
 set_output "released" "true"
 set_output "version" "$TAG"
+
+# ─── 13. step summary ───────────────────────────────────────────────────────
+
+if [[ -n "${GITHUB_STEP_SUMMARY:-}" ]]; then
+  PKG_NAME=$(jq -r .name package.json)
+  REPO_NAME=$(basename "$REPO_URL")
+
+  cat >> "$GITHUB_STEP_SUMMARY" <<MD
+## \`${PKG_NAME}@${VERSION}\` published 🚀
+
+| | |
+|---|---|
+| Version | [\`${TAG}\`](${REPO_URL}/releases/tag/${TAG}) |
+| Package | [GitHub Packages](${REPO_URL}/pkgs/npm/${REPO_NAME}) |
+MD
+  ok "Step summary written"
+fi
