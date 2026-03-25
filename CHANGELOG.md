@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [v1.1.0](https://github.com/armadillo-ui/math-utils/compare/v1.0.0..v1.1.0) - 2026-03-24
+
+### Features
+- update README version to v1 - ([aa25a7b](https://github.com/armadillo-ui/math-utils/commit/aa25a7b0e2b074806a3946549bc9410e86e1a9e0))
+
+### Bug fixes
+- correct handling of empty raw message in changelog entry generation - ([c512102](https://github.com/armadillo-ui/math-utils/commit/c512102cdafbdeb3178308c580d1a288f84d039b))
+- update changelog tests to verify commit link generation - ([a90fe2b](https://github.com/armadillo-ui/math-utils/commit/a90fe2bdc8730ededeb95d4d81be14e3781e7213))
+- - -
 ## [v1.0.0](https://github.com/armadillo-ui/math-utils/compare/v0.7.0..v1.0.0) - 2026-03-24
 
 ### Bug fixes
